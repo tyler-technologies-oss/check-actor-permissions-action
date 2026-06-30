@@ -26,7 +26,14 @@
     "sync_schedule": "Weekly (Monday 06:00 UTC)",
     "tag_check_schedule": "Weekly (Wednesday 06:00 UTC)"
   },
-  "pinned_tags": [],
+  "pinned_tags": [
+    {
+      "tag": "v3.0.2",
+      "fork_sha": "d504e74ba31658f4cdf4fcfeb509d4c09736d88e",
+      "pinned_date": "2026-06-30T18:12:01Z",
+      "upstream_source": "prince-chrismc/check-actor-permissions-action"
+    }
+  ],
   "metadata": {
     "created_date": "2026-06-30T18:11:56Z",
     "created_by": "fork-action.sh",

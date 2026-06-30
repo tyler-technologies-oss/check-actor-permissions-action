@@ -1,0 +1,30 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force sync even if already up to date'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: sync-upstream
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    uses: tyler-technologies-oss/external-action-shared-workflows/.github/workflows/sync-upstream.yml@v1
+    with:
+      upstream_owner: prince-chrismc
+      upstream_repo: check-actor-permissions-action
+      default_branch: main
+      force: ${{ inputs.force == true }}

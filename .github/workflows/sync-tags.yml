@@ -1,0 +1,21 @@
+name: Sync Tags
+
+on:
+  schedule:
+    - cron: '0 6 * * 3'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: sync-tags
+  cancel-in-progress: false
+
+jobs:
+  check-tags:
+    uses: tyler-technologies-oss/external-action-shared-workflows/.github/workflows/sync-tags.yml@v1
+    with:
+      upstream_owner: prince-chrismc
+      upstream_repo: check-actor-permissions-action

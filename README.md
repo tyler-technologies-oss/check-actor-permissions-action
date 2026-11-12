@@ -45,3 +45,17 @@ steps:
     with:
       token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # Typically this would fail on public forks as secret are not available
 ```
+
+### Checking a Different User
+
+By default the action checks `github.actor`, the user that started the workflow run. Pass `username` to check someone else. On a re-run, `github.actor` is still the user that started the first attempt, so checking the user that started the re-run needs `github.triggering_actor`:
+
+```yaml
+steps:
+  - name: Only admins may re-run
+    if: ${{ fromJSON(github.run_attempt) > 1 }}
+    uses: tyler-technologies-oss/check-actor-permissions-action@v3
+    with:
+      permission: admin
+      username: ${{ github.triggering_actor }}
+```

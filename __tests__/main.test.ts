@@ -255,4 +255,40 @@ describe('queries', () => {
     await expect(permission).rejects.toThrow()
     expect(scope.isDone()).toBe(true)
   })
+
+  test('explicit username is checked instead of the actor', async () => {
+    const scope = nock('https://api.github.com', {
+      reqheaders: {
+        authorization: 'token justafaketoken'
+      }
+    })
+      .get(
+        `/repos/${context.repo.owner}/${context.repo.repo}/collaborators/re-runner/permission`
+      )
+      .reply(200, {permission: 'write', role_name: 'write'})
+
+    const octokit = getOctokit('justafaketoken')
+
+    const permission = await permitted(octokit, context, 'admin', 're-runner')
+    expect(permission).toBe(false)
+    expect(scope.isDone()).toBe(true)
+  })
+
+  test('omitted username falls back to the actor', async () => {
+    const scope = nock('https://api.github.com', {
+      reqheaders: {
+        authorization: 'token justafaketoken'
+      }
+    })
+      .get(
+        `/repos/${context.repo.owner}/${context.repo.repo}/collaborators/${context.actor}/permission`
+      )
+      .reply(200, {permission: 'admin', role_name: 'admin'})
+
+    const octokit = getOctokit('justafaketoken')
+
+    const permission = await permitted(octokit, context, 'admin', undefined)
+    expect(permission).toBe(true)
+    expect(scope.isDone()).toBe(true)
+  })
 })

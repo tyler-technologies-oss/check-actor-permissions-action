@@ -47,9 +47,11 @@ async function run() {
     try {
         const githubToken = core.getInput('github_token');
         const octokit = github.getOctokit(githubToken);
-        const username = github.context.actor;
+        const username = // User to check, defaulting to the run's actor
+         core.getInput('username')
+            || github.context.actor;
         const requiredPermission = core.getInput('permission', { required: true }); // Permission level passed in through args
-        const allowed = await (0, permitted_1.permitted)(octokit, github.context, requiredPermission);
+        const allowed = await (0, permitted_1.permitted)(octokit, github.context, requiredPermission, username);
         if (allowed) {
             core.info(`✔️ ${username} is permitted`);
             core.setOutput('permitted', 'true');
@@ -112,14 +114,15 @@ exports.permitted = permitted;
 const core = __importStar(__nccwpck_require__(7484));
 // Permission levels - higher in the array have higher access to the repo.
 const perms = ['none', 'read', 'write', 'admin'];
-async function permitted(octokit, context, requiredPermission) {
+async function permitted(octokit, context, requiredPermission, username = context.actor) {
     const response = await octokit.rest.repos.getCollaboratorPermissionLevel({
         ...context.repo,
-        username: context.actor
+        username
     });
     const permission = response.data.permission; // Permission level of actual actor
     const yourPermIdx = perms.indexOf(permission);
     const requiredPermIdx = perms.indexOf(requiredPermission);
+    core.debug(`Username: ${username}`);
     core.debug(`Actor Permission: ${permission}`);
     core.debug(`Required Permission: ${requiredPermission}`);
     // If the index of the current actor's permission is at least or greater than the required,

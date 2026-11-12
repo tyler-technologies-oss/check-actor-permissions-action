@@ -8,11 +8,12 @@ const perms: readonly string[] = ['none', 'read', 'write', 'admin']
 export async function permitted(
   octokit: InstanceType<typeof GitHub>,
   context: Context,
-  requiredPermission: string
+  requiredPermission: string,
+  username: string = context.actor
 ): Promise<boolean> {
   const response = await octokit.rest.repos.getCollaboratorPermissionLevel({
     ...context.repo,
-    username: context.actor
+    username
   })
 
   const permission = response.data.permission // Permission level of actual actor
@@ -20,6 +21,7 @@ export async function permitted(
   const yourPermIdx = perms.indexOf(permission)
   const requiredPermIdx = perms.indexOf(requiredPermission)
 
+  core.debug(`Username: ${username}`)
   core.debug(`Actor Permission: ${permission}`)
   core.debug(`Required Permission: ${requiredPermission}`)
 

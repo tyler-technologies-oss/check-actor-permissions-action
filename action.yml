@@ -15,6 +15,13 @@ inputs:
   permission:
     description: The minimum permission level required
     required: true
+  username:
+    description: >-
+      The user whose permission is checked. Defaults to the actor that started
+      the workflow run. Pass `github.triggering_actor` to check the user that
+      started a re-run.
+    required: false
+    default: ${{ github.actor }}
 runs:
   using: "node20"
   main: "dist/index.js"
